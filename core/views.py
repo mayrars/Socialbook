@@ -15,7 +15,7 @@ def index(request):
 def settings(request):
     user_profile = Profile.objects.get(user=request.user)
     if request.method =='POST':
-        if request.FILE.get('imagte')==None:
+        if request.FILES.get('image')==None:
             image = user_profile.profileimg
             bio = request.POST['bio']
             location = request.POST['location']
