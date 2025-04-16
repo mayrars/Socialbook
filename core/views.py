@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Profile
+from .models import Profile, Post
 
 # Create your views here.
 
@@ -11,11 +11,23 @@ from .models import Profile
 def index(request):
     user_object = User.objects.get(username=request.user.username)
     user_profile = Profile.objects.get(user=user_object)
-    return render(request, 'index.html',{'user_profile': user_profile})
+
+    posts = Post.objects.all()
+    return render(request, 'index.html',{'user_profile': user_profile, 'posts': posts})
 
 @login_required(login_url='signin')
 def upload(request):
-    return HttpResponse('<h1>Upload</h1>')
+    if request.method == 'POST':
+        user = request.user.username
+        image = request.FILES.get('image_upload')
+        caption = request.POST['caption']
+
+        new_post = Post.objects.create(user=user, image=image, caption=caption)
+        new_post.save()
+
+        return redirect('/')
+    else:
+        return redirect('/')
 
 @login_required(login_url='signin')
 def settings(request):
